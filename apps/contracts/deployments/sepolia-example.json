@@ -1,0 +1,59 @@
+{
+  "network": "sepolia",
+  "chainId": 11155111,
+  "deployer": "0x...",
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "contracts": {
+    "GenLoopPoints": {
+      "address": "0x...",
+      "txHash": "0x...",
+      "blockNumber": 12345678,
+      "verified": false
+    },
+    "GeneRegistry": {
+      "address": "0x...",
+      "txHash": "0x...",
+      "blockNumber": 12345678,
+      "verified": false
+    },
+    "GeneToken": {
+      "address": "0x...",
+      "txHash": "0x...",
+      "blockNumber": 12345678,
+      "verified": false
+    },
+    "PaymentHandler": {
+      "address": "0x...",
+      "txHash": "0x...",
+      "blockNumber": 12345678,
+      "verified": false,
+      "constructorArgs": [
+        "0x...",
+        "0x..."
+      ]
+    },
+    "GeneExchange": {
+      "address": "0x...",
+      "txHash": "0x...",
+      "blockNumber": 12345678,
+      "verified": false,
+      "constructorArgs": [
+        "0x...",
+        "0x..."
+      ]
+    },
+    "GeneMerging": {
+      "address": "0x...",
+      "txHash": "0x...",
+      "blockNumber": 12345678,
+      "verified": false,
+      "constructorArgs": [
+        "0x...",
+        "0x...",
+        "0x...",
+        "0x...",
+        1
+      ]
+    }
+  }
+}

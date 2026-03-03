@@ -1,0 +1,23 @@
+{
+  "name": "genloop-mvp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "GenLoop AI智能交配市场 - 48小时MVP",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "deploy:contracts": "cd apps/contracts && npx hardhat run scripts/deploy.ts --network sepolia",
+    "verify:contracts": "cd apps/contracts && npx hardhat verify --network sepolia",
+    "dev:gateway": "cd apps/compute-gateway && npm run dev",
+    "build:gateway": "cd apps/compute-gateway && npm run build"
+  },
+  "devDependencies": {
+    "turbo": "^1.12.0"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
+}

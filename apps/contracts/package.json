@@ -1,0 +1,38 @@
+{
+  "name": "@genloop/contracts",
+  "version": "2.0.0",
+  "description": "GenLoop 2.0 智能合约 - 支持ETH、USDC和法币支付",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:local": "hardhat run scripts/deploy.ts --network localhost",
+    "deploy:sepolia": "hardhat run scripts/deploy.ts --network sepolia",
+    "verify:sepolia": "hardhat run scripts/verify.ts --network sepolia",
+    "check:sepolia": "hardhat run scripts/check-deployment.ts --network sepolia",
+    "verify:manual": "hardhat verify",
+    "node": "hardhat node",
+    "clean": "hardhat clean",
+    "coverage": "hardhat coverage"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@nomicfoundation/hardhat-verify": "^2.0.0",
+    "@openzeppelin/contracts": "^5.0.0",
+    "dotenv": "^16.3.0",
+    "ethers": "^6.16.0",
+    "hardhat": "^2.28.6",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.0"
+  },
+  "keywords": [
+    "solidity",
+    "hardhat",
+    "genloop",
+    "nft",
+    "gene",
+    "sepolia",
+    "usdc",
+    "alipay"
+  ],
+  "license": "MIT"
+}

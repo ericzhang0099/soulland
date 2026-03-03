@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  compute-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: compute-gateway
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - AGC_API_URL=${AGC_API_URL}
+      - AGC_API_KEY=${AGC_API_KEY}
+      # OpenAI
+      - OPENAI_ENABLED=${OPENAI_ENABLED:-true}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL:-https://api.openai.com/v1}
+      - OPENAI_PRIORITY=${OPENAI_PRIORITY:-1}
+      # Anthropic
+      - ANTHROPIC_ENABLED=${ANTHROPIC_ENABLED:-true}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - ANTHROPIC_BASE_URL=${ANTHROPIC_BASE_URL:-https://api.anthropic.com}
+      - ANTHROPIC_PRIORITY=${ANTHROPIC_PRIORITY:-2}
+      # Aliyun
+      - ALIYUN_ENABLED=${ALIYUN_ENABLED:-false}
+      - ALIYUN_API_KEY=${ALIYUN_API_KEY}
+      - ALIYUN_BASE_URL=${ALIYUN_BASE_URL:-https://dashscope.aliyuncs.com/api/v1}
+      - ALIYUN_PRIORITY=${ALIYUN_PRIORITY:-3}
+      # Zhipu
+      - ZHIPU_ENABLED=${ZHIPU_ENABLED:-false}
+      - ZHIPU_API_KEY=${ZHIPU_API_KEY}
+      - ZHIPU_BASE_URL=${ZHIPU_BASE_URL:-https://open.bigmodel.cn/api/paas/v4}
+      - ZHIPU_PRIORITY=${ZHIPU_PRIORITY:-4}
+    depends_on:
+      - redis
+    networks:
+      - compute-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  redis:
+    image: redis:7-alpine
+    container_name: compute-gateway-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - compute-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
+volumes:
+  redis-data:
+
+networks:
+  compute-network:
+    driver: bridge

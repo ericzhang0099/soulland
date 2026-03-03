@@ -1,0 +1,22 @@
+.env
+.env.local
+.env.*.local
+node_modules/
+coverage/
+typechain/
+typechain-types/
+cache/
+artifacts/
+*.log
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Hardhat files
+deployments/*-*.json
+!deployments/*-example.json
+dist/
+build/
