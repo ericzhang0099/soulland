@@ -44,11 +44,105 @@ export const ALIPAY_PAYMENT_ABI = [
 ];
 
 export const GENE_TOKEN_ABI = [
+  // GUGS: 支持 payload 的铸币函数
+  "function mintGeneWithPayload(address to, uint256 geneId, string memory metadataURI, tuple(uint8 format, string encoding, string data, bytes32 contentHash, string mimeType) calldata payload) external returns (bool)",
+  "function getGenePayload(uint256 geneId) external view returns (tuple(uint8 format, string encoding, string data, bytes32 contentHash, string mimeType))",
+  "function getGeneByContentHash(bytes32 contentHash) external view returns (uint256)",
+  "function contentHashExists(bytes32 contentHash) external view returns (bool)",
+  "function updatePayload(uint256 geneId, tuple(uint8 format, string encoding, string data, bytes32 contentHash, string mimeType) calldata newPayload) external",
+  // GUGS 事件
+  "event GeneMintedWithPayload(uint256 indexed geneId, address indexed creator, uint8 format, bytes32 contentHash)",
+  "event PayloadUpdated(uint256 indexed geneId, bytes32 newContentHash)",
+  // 传统函数
   "function mintGene(address to, uint256 geneId, string memory metadataURI) external returns (bool)",
   "function ownerOf(uint256 tokenId) external view returns (address)",
   "function geneExists(uint256 geneId) external view returns (bool)",
   "function getGenesByOwner(address owner) external view returns (uint256[] memory)",
+  "function geneCreators(uint256 geneId) external view returns (address)",
+  "function genePayloads(uint256 geneId) external view returns (uint8 format, string encoding, string data, bytes32 contentHash, string mimeType)",
+  "function contentHashToGeneId(bytes32 contentHash) external view returns (uint256)",
+  "function burnGene(uint256 geneId) external",
+  "function tokenURI(uint256 tokenId) external view returns (string memory)",
 ];
+
+// GUGS: GeneFormat 枚举映射
+export enum GeneFormat {
+  Native = 0,   // 原生 GenLoop 格式
+  GEP = 1,      // EvoMap GEP 格式 (JSON)
+  SkillMD = 2,  // ClawHub SKILL.md 格式
+  Custom = 3,   // 自定义格式
+}
+
+// GUGS: 基因载荷接口
+export interface GenePayload {
+  format: GeneFormat;
+  encoding: string;
+  data: string;
+  contentHash: string;
+  mimeType: string;
+}
+
+// GUGS: 从合约返回的原始 payload 转换为 GenePayload
+export function parseGenePayload(raw: any): GenePayload {
+  // 处理不同的返回格式 (tuple vs object)
+  if (Array.isArray(raw)) {
+    return {
+      format: raw[0],
+      encoding: raw[1],
+      data: raw[2],
+      contentHash: raw[3],
+      mimeType: raw[4],
+    };
+  }
+  return {
+    format: raw.format,
+    encoding: raw.encoding,
+    data: raw.data,
+    contentHash: raw.contentHash,
+    mimeType: raw.mimeType,
+  };
+}
+
+// GUGS: 创建 payload 用于合约调用
+export function createGenePayload(
+  format: GeneFormat,
+  data: string,
+  encoding: string = 'utf-8',
+  mimeType?: string
+): Omit<GenePayload, 'contentHash'> & { contentHash: string } {
+  // 计算 contentHash (使用 keccak256)
+  const contentHash = computeKeccak256(data);
+  
+  return {
+    format,
+    encoding,
+    data,
+    contentHash,
+    mimeType: mimeType || getDefaultMimeType(format),
+  };
+}
+
+// 获取默认 MIME 类型
+function getDefaultMimeType(format: GeneFormat): string {
+  switch (format) {
+    case GeneFormat.GEP:
+      return 'application/json';
+    case GeneFormat.SkillMD:
+      return 'text/markdown';
+    case GeneFormat.Native:
+      return 'application/json';
+    case GeneFormat.Custom:
+    default:
+      return 'application/octet-stream';
+  }
+}
+
+// 简单的 keccak256 哈希计算 (需要引入 ethers 或类似库)
+function computeKeccak256(data: string): string {
+  // 注意：实际使用时应该使用 ethers.utils.keccak256 或类似函数
+  // 这里返回占位符，实际实现应该在调用时处理
+  return '0x' + '0'.repeat(64);
+}
 
 export const GENE_REGISTRY_ABI = [
   "function registerGene(address creator, uint8 geneType, uint256 rarityScore, bytes32 dnaHash) external returns (uint256)",

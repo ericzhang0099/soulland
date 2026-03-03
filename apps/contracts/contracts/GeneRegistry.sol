@@ -26,9 +26,11 @@ contract GeneRegistry is AccessControl, Pausable {
     uint256 public minRarityForMerging = 1000;
     
     event GeneRegistered(uint256 indexed geneId, address indexed creator, GenLoopTypes.GeneType geneType, uint256 rarityScore, bytes32 dnaHash);
+    event GeneRegisteredWithPayload(uint256 indexed geneId, address indexed creator, GenLoopTypes.GeneFormat format, bytes32 contentHash);
     event GeneActivated(uint256 indexed geneId);
     event GeneDeactivated(uint256 indexed geneId);
     event RarityUpdated(uint256 indexed geneId, uint256 newRarity);
+    event PayloadUpdated(uint256 indexed geneId, bytes32 newContentHash);
     
     constructor() {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -48,6 +50,15 @@ contract GeneRegistry is AccessControl, Pausable {
         
         geneId = nextGeneId++;
         
+        // GUGS: 创建默认的 Native 格式 payload
+        GenLoopTypes.GenePayload memory defaultPayload = GenLoopTypes.GenePayload({
+            format: GenLoopTypes.GeneFormat.Native,
+            encoding: "utf-8",
+            data: "",
+            contentHash: dnaHash,
+            mimeType: "application/json"
+        });
+        
         genes[geneId] = GenLoopTypes.Gene({
             id: geneId,
             creator: creator,
@@ -58,7 +69,8 @@ contract GeneRegistry is AccessControl, Pausable {
             parentA: 0,
             parentB: 0,
             generation: 1,
-            isActive: true
+            isActive: true,
+            payload: defaultPayload
         });
         
         dnaHashExists[dnaHash] = true;
@@ -70,12 +82,52 @@ contract GeneRegistry is AccessControl, Pausable {
         return geneId;
     }
     
+    // GUGS: 支持 payload 的注册函数
+    function registerGeneWithPayload(
+        address creator,
+        GenLoopTypes.GeneType geneType,
+        uint256 rarityScore,
+        bytes32 dnaHash,
+        GenLoopTypes.GenePayload calldata payload
+    ) external onlyRole(REGISTRAR_ROLE) whenNotPaused returns (uint256 geneId) {
+        require(creator != address(0), "Invalid creator");
+        require(rarityScore <= MAX_RARITY, "Rarity too high");
+        require(!dnaHashExists[dnaHash], "DNA exists");
+        require(bytes(payload.data).length > 0, "Empty payload");
+        
+        geneId = nextGeneId++;
+        
+        genes[geneId] = GenLoopTypes.Gene({
+            id: geneId,
+            creator: creator,
+            geneType: geneType,
+            rarityScore: rarityScore,
+            dnaHash: dnaHash,
+            createdAt: block.timestamp,
+            parentA: 0,
+            parentB: 0,
+            generation: 1,
+            isActive: true,
+            payload: payload
+        });
+        
+        dnaHashExists[dnaHash] = true;
+        userGeneIds[creator].push(geneId);
+        allGeneIds.push(geneId);
+        totalGenes++;
+        
+        emit GeneRegistered(geneId, creator, geneType, rarityScore, dnaHash);
+        emit GeneRegisteredWithPayload(geneId, creator, payload.format, payload.contentHash);
+        return geneId;
+    }
+    
     function registerMergedGene(
         address creator,
         uint256 parentA,
         uint256 parentB,
         uint256 rarityScore,
-        bytes32 dnaHash
+        bytes32 dnaHash,
+        GenLoopTypes.GenePayload calldata payload
     ) external onlyRole(REGISTRAR_ROLE) whenNotPaused returns (uint256 geneId) {
         require(genes[parentA].id != 0, "Parent A not found");
         require(genes[parentB].id != 0, "Parent B not found");
@@ -97,7 +149,8 @@ contract GeneRegistry is AccessControl, Pausable {
             parentA: parentA,
             parentB: parentB,
             generation: generation,
-            isActive: true
+            isActive: true,
+            payload: payload
         });
         
         dnaHashExists[dnaHash] = true;
@@ -106,6 +159,7 @@ contract GeneRegistry is AccessControl, Pausable {
         totalGenes++;
         
         emit GeneRegistered(geneId, creator, GenLoopTypes.GeneType.Hybrid, rarityScore, dnaHash);
+        emit GeneRegisteredWithPayload(geneId, creator, payload.format, payload.contentHash);
         return geneId;
     }
     
@@ -114,6 +168,24 @@ contract GeneRegistry is AccessControl, Pausable {
         require(newRarity <= MAX_RARITY, "Rarity too high");
         genes[geneId].rarityScore = newRarity;
         emit RarityUpdated(geneId, newRarity);
+    }
+    
+    // GUGS: 更新基因载荷
+    function updateGenePayload(uint256 geneId, GenLoopTypes.GenePayload calldata newPayload) 
+        external 
+        onlyRole(REGISTRAR_ROLE) 
+    {
+        require(genes[geneId].id != 0, "Gene not found");
+        require(bytes(newPayload.data).length > 0, "Empty payload");
+        
+        genes[geneId].payload = newPayload;
+        emit PayloadUpdated(geneId, newPayload.contentHash);
+    }
+    
+    // GUGS: 获取基因载荷
+    function getGenePayload(uint256 geneId) external view returns (GenLoopTypes.GenePayload memory) {
+        require(genes[geneId].id != 0, "Gene not found");
+        return genes[geneId].payload;
     }
     
     function setGeneActive(uint256 geneId, bool active) external onlyRole(REGISTRAR_ROLE) {

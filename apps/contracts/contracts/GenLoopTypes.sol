@@ -14,6 +14,22 @@ library GenLoopTypes {
         Hybrid          // 混合型基因
     }
     
+    // GUGS: GenLoop Unified Gene Standard
+    enum GeneFormat {
+        Native,         // 原生 GenLoop 格式
+        GEP,            // EvoMap GEP 格式 (JSON)
+        SkillMD,        // ClawHub SKILL.md 格式
+        Custom          // 自定义格式
+    }
+
+    struct GenePayload {
+        GeneFormat format;         // 格式类型
+        string encoding;           // 编码方式 (utf-8, base64, etc.)
+        string data;               // 原始数据内容
+        bytes32 contentHash;       // 内容哈希 (验证完整性)
+        string mimeType;           // MIME 类型
+    }
+
     struct Gene {
         uint256 id;
         address creator;
@@ -25,6 +41,7 @@ library GenLoopTypes {
         uint256 parentB;
         uint256 generation;
         bool isActive;
+        GenePayload payload;       // GUGS: 多格式基因载荷
     }
     
     struct Order {
@@ -64,5 +81,6 @@ library GenLoopTypes {
         uint256 timestamp;
         bytes32 newDnaHash;
         uint256 rarityScore;
+        GenePayload payload;       // GUGS: 合并结果的载荷
     }
 }

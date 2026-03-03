@@ -93,7 +93,14 @@ contract GeneMerging is AccessControl, ReentrancyGuard {
             creator: msg.sender,
             timestamp: block.timestamp,
             newDnaHash: req.newDnaHash,
-            rarityScore: req.predictedRarity
+            rarityScore: req.predictedRarity,
+            payload: GenLoopTypes.GenePayload({
+                format: GenLoopTypes.GeneFormat.Native,
+                encoding: "utf-8",
+                data: "",
+                contentHash: req.newDnaHash,
+                mimeType: "application/json"
+            })
         });
         
         totalMerges++;
