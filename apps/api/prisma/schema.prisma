@@ -1,0 +1,120 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String   @id @default(uuid())
+  address         String   @unique
+  email           String   @unique
+  name            String?
+  identityTokenId String?
+  level           Int      @default(9)
+  contribution    Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  genes         Gene[]
+  transactions  Transaction[]
+  evolutions    Evolution[]
+  skills        Skill[]
+
+  @@map("users")
+}
+
+model Gene {
+  id          String   @id @default(uuid())
+  tokenId     String   @unique
+  creatorId   String
+  ownerId     String
+  name        String
+  description String?
+  price       Decimal  @default(0)
+  metadata    Json?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  creator     User          @relation(fields: [creatorId], references: [id])
+  transactions Transaction[]
+
+  @@map("genes")
+}
+
+model Transaction {
+  id        String   @id @default(uuid())
+  buyerId   String
+  sellerId  String
+  geneId    String?
+  amount    Decimal
+  txHash    String   @unique
+  status    TransactionStatus @default(PENDING)
+  type      TransactionType
+  createdAt DateTime @default(now())
+
+  // Relations
+  buyer  User  @relation(fields: [buyerId], references: [id])
+  gene   Gene? @relation(fields: [geneId], references: [id])
+
+  @@map("transactions")
+}
+
+model Evolution {
+  id          String   @id @default(uuid())
+  agentId     String
+  level       Int      // 1=Basic, 2=Advanced, 3=Expert
+  evoType     String   // Training, RL, MetaLearning, NAS, CodeEvolution
+  skillName   String
+  beforeScore Int
+  afterScore  Int
+  improvement Int
+  traceHash   String
+  txHash      String?
+  createdAt   DateTime @default(now())
+
+  // Relations
+  agent User @relation(fields: [agentId], references: [id])
+
+  @@map("evolutions")
+}
+
+model Skill {
+  id          String   @id @default(uuid())
+  creatorId   String
+  name        String
+  description String?
+  category    String
+  price       Decimal  @default(0)
+  metadata    Json?
+  downloads   Int      @default(0)
+  rating      Decimal  @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  creator User @relation(fields: [creatorId], references: [id])
+
+  @@map("skills")
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum TransactionType {
+  GENE_PURCHASE
+  GENE_SALE
+  SKILL_PURCHASE
+  PLATFORM_FEE
+  REWARD
+}

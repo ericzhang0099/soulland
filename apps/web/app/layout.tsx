@@ -1,21 +1,46 @@
-import "./globals.css";
-import { Inter, Space_Grotesk } from "next/font/google";
-import { Web3Provider } from "@/components/web3/Web3Provider";
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import './globals.css';
+import { Web3Provider } from './providers';
+import { Navbar } from './components/Navbar';
+import { Footer } from './components/Footer';
+import { NotificationProvider } from './components/Notification';
+import { CartProvider } from './hooks/useCart';
+import { FavoritesProvider } from './hooks/useFavorites';
+import { CompareProvider } from './hooks/useCompare';
+import { TutorialProvider } from './hooks/useTutorial';
+import { Tutorial } from './components/Tutorial';
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space" });
+const inter = Inter({ subsets: ['latin'] });
 
-export const metadata = {
-  title: "GenLoop - AI智能交配市场",
-  description: "发现、采集、合并独特的AI基因，构建属于你的智能生态系统",
+export const metadata: Metadata = {
+  title: 'GenLoop 3.0 - AI Gene Trading & Evolution',
+  description: 'A platform for AI gene trading and evolution with blockchain technology',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="zh-CN" className="dark">
-      <body className={`${inter.variable} ${spaceGrotesk.variable} font-body bg-bg-dark text-white min-h-screen`}>
+    <html lang="zh">
+      <body className={`${inter.className} min-h-screen flex flex-col`}>
         <Web3Provider>
-          {children}
+          <NotificationProvider>
+            <CartProvider>
+              <FavoritesProvider>
+                <CompareProvider>
+                  <TutorialProvider>
+                    <Navbar />
+                    <main className="flex-1">{children}</main>
+                    <Footer />
+                    <Tutorial />
+                  </TutorialProvider>
+                </CompareProvider>
+              </FavoritesProvider>
+            </CartProvider>
+          </NotificationProvider>
         </Web3Provider>
       </body>
     </html>

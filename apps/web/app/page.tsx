@@ -1,98 +1,121 @@
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import Link from "next/link";
+'use client';
+
+import Link from 'next/link';
+import { useAccount } from 'wagmi';
 
 export default function Home() {
-  return (
-    <div className="min-h-screen">
-      {/* Navigation */}
-      <nav className="border-b border-white/10 bg-bg-card/50 backdrop-blur-md fixed w-full z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-accent-pink rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold">G</span>
-              </div>
-              <span className="font-display font-bold text-xl">GenLoop</span>
-            </Link>
-            
-            <div className="hidden md:flex items-center gap-8">
-              <Link href="/marketplace" className="text-gray-300 hover:text-white transition">
-                市场
-              </Link>
-              <Link href="/breeding" className="text-gray-300 hover:text-white transition">
-                交配室
-              </Link>
-              <Link href="/dashboard" className="text-gray-300 hover:text-white transition">
-                仪表盘
-              </Link>
-              <Link href="/payment" className="text-accent-emerald hover:text-accent-emerald/80 transition font-medium">
-                充值
-              </Link>
-            </div>
+  const { isConnected } = useAccount();
 
-            <ConnectButton />
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white">
+      {/* Hero Section */}
+      <section className="py-20 px-6">
+        <div className="max-w-4xl mx-auto text-center">
+          <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+            GenLoop 3.0
+          </h1>
+          
+          <p className="text-xl md:text-2xl text-gray-300 mb-8">
+            AI基因交易与进化平台
+          </p>
+          
+          <p className="text-gray-400 mb-12 max-w-2xl mx-auto">
+            通过双螺旋循环实现AI能力的持续进化。
+            第一模块提供基因交易与等级系统，
+            第二模块驱动大模型训练飞轮。
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            {isConnected ? (
+              <>
+                <Link
+                  href="/market"
+                  className="px-8 py-3 bg-blue-600 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                >
+                  探索市场
+                </Link>
+                <Link
+                  href="/training"
+                  className="px-8 py-3 bg-purple-600 rounded-lg font-medium hover:bg-purple-700 transition-colors"
+                >
+                  开始训练
+                </Link>
+              </>
+            ) : (
+              <p className="text-gray-400">连接钱包以开始</p>
+            )}
           </div>
         </div>
-      </nav>
+      </section>
 
-      {/* Hero Section */}
-      <main className="pt-24 pb-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center py-20">
-            <h1 className="font-display text-5xl md:text-7xl font-bold mb-6">
-              <span className="bg-gradient-to-r from-primary-400 via-accent-pink to-accent-cyan bg-clip-text text-transparent">
-                GenLoop
-              </span>
-            </h1>
-            <p className="text-2xl md:text-3xl text-gray-300 mb-4">
-              AI智能基因交配市场
-            </p>
-            <p className="text-lg text-gray-400 max-w-2xl mx-auto mb-10">
-              发现、采集、合并独特的AI基因，构建属于你的智能生态系统
-            </p>
+      {/* Features Section */}
+      <section className="py-20 px-6 bg-gray-900/50">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-12">核心功能</h2>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/marketplace"
-                className="px-8 py-4 bg-primary-600 hover:bg-primary-500 rounded-xl font-semibold transition"
-              >
-                开始探索
-              </Link>
-              <Link
-                href="/breeding"
-                className="px-8 py-4 bg-white/10 hover:bg-white/20 rounded-xl font-semibold transition border border-white/20"
-              >
-                进入交配室
-              </Link>
-              <Link
-                href="/payment"
-                className="px-8 py-4 bg-gradient-to-r from-accent-emerald to-emerald-500 hover:from-accent-emerald/90 hover:to-emerald-500/90 rounded-xl font-semibold transition"
-              >
-                💎 充值积分
-              </Link>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+              <div className="text-4xl mb-4">🧬</div>
+              <h3 className="text-xl font-semibold mb-3">基因市场</h3>
+              <p className="text-gray-400">交易AI基因和Skill，90%收益归创作者</p>
+            </div>
+
+            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+              <div className="text-4xl mb-4">📚</div>
+              <h3 className="text-xl font-semibold mb-3">图书馆/训练场</h3>
+              <p className="text-gray-400">学习Skill并记录进化轨迹，获得进化证明NFT</p>
+            </div>
+
+            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+              <div className="text-4xl mb-4">⚡</div>
+              <h3 className="text-xl font-semibold mb-3">飞轮效应</h3>
+              <p className="text-gray-400">双层10x加速，数据驱动模型持续进化</p>
             </div>
           </div>
+        </div>
+      </section>
 
-          {/* Features */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-16">
-            {[
-              { icon: "🔬", title: "采集", desc: "Collect", color: "accent-cyan" },
-              { icon: "🧬", title: "交配", desc: "Breed", color: "accent-pink" },
-              { icon: "📤", title: "转发", desc: "Forward", color: "accent-amber" },
-              { icon: "💎", title: "稀缺", desc: "Rarity", color: "accent-emerald" },
-            ].map((feature) => (
+      {/* Level System */}
+      <section className="py-20 px-6">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl font-bold mb-8">修仙等级系统</h2>
+          
+          <div className="flex flex-wrap justify-center gap-4">
+            {['道祖', '大罗', '太乙', '金仙', '真仙', '大乘', '合体', '炼虚', '化神'].map((level, i) => (
               <div
-                key={feature.title}
-                className="p-6 bg-bg-card rounded-2xl border border-white/10 hover:border-white/20 transition"
+                key={level}
+                className={`px-4 py-2 rounded-lg font-medium ${
+                  i === 0 ? 'bg-yellow-500/20 text-yellow-400' :
+                  i === 1 ? 'bg-purple-500/20 text-purple-400' :
+                  i === 2 ? 'bg-blue-500/20 text-blue-400' :
+                  'bg-gray-700 text-gray-400'
+                }`}
               >
-                <div className="text-4xl mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-bold mb-1">{feature.title}</h3>
-                <p className={`text-${feature.color}`}>{feature.desc}</p>
+                {level}
               </div>
             ))}
           </div>
+
+          <p className="mt-8 text-gray-400">
+            动态竞争机制，按进入顺序分配等级，持续贡献可升级
+          </p>
         </div>
-      </main>
+      </section>
+
+      {/* CTA */}
+      <section className="py-20 px-6 bg-gradient-to-r from-blue-600/20 to-purple-600/20">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl font-bold mb-4">准备好开始了吗？</h2>
+          <p className="text-gray-400 mb-8">加入GenLoop 3.0，开启你的AI进化之旅</p>
+          
+          <Link
+            href="/profile"
+            className="inline-block px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg font-medium hover:opacity-90 transition-opacity"
+          >
+            立即开始
+          </Link>
+        </div>
+      </section>
     </div>
   );
 }

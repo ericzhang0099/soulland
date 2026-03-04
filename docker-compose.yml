@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  # PostgreSQL数据库
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: genloop
+      POSTGRES_PASSWORD: genloop123
+      POSTGRES_DB: genloop
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  # Redis缓存
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  # 后端API
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql://genloop:genloop123@postgres:5432/genloop
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: your-jwt-secret
+      PRIVATE_KEY: your-private-key
+    ports:
+      - "3001:3001"
+    depends_on:
+      - postgres
+      - redis
+
+  # 前端
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+
+  # 训练模块
+  training:
+    build:
+      context: ./apps/training
+      dockerfile: Dockerfile
+    environment:
+      API_URL: http://api:3001
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
