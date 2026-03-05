@@ -22,6 +22,38 @@ asarUnpack:
   - "**/*.node"
   - node_modules/puppeteer-core/**/*
 
+# Windows 配置
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+        - ia32
+    - target: portable
+      arch:
+        - x64
+  icon: build/icon.ico
+  publisherName: GenLoop Team
+  verifyUpdateCodeSignature: false
+  requestedExecutionLevel: requireAdministrator
+  signAndEditExecutable: false
+  
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: always
+  createStartMenuShortcut: true
+  shortcutName: GenLoop Desktop
+  uninstallDisplayName: GenLoop Desktop
+  license: LICENSE.txt
+  artifactName: GenLoop-Desktop-Setup-${version}-${arch}.${ext}
+  deleteAppDataOnUninstall: false
+  displayLanguageSelector: true
+  
+portable:
+  artifactName: GenLoop-Desktop-Portable-${version}-${arch}.${ext}
+
+# macOS 配置
 mac:
   category: public.app-category.productivity
   target:
@@ -33,14 +65,7 @@ mac:
   entitlements: build/entitlements.mac.plist
   entitlementsInherit: build/entitlements.mac.plist
 
-win:
-  target:
-    - nsis
-    - portable
-  icon: build/icon.ico
-  publisherName: GenLoop Team
-  verifyUpdateCodeSignature: false
-
+# Linux 配置
 linux:
   target:
     - AppImage
@@ -49,17 +74,13 @@ linux:
   icon: build/icon.png
   category: Utility
 
-nsis:
-  oneClick: false
-  allowToChangeInstallationDirectory: true
-  createDesktopShortcut: always
-  createStartMenuShortcut: true
-
+# 发布配置
 publish:
   provider: github
-  owner: ValueCell-ai
-  repo: GenLoop-Desktop
+  owner: ericzhang0099
+  repo: soulland
 
+# 协议注册
 protocols:
   - name: GenLoop
     schemes:
