@@ -1,0 +1,66 @@
+appId: com.genloop.desktop
+productName: GenLoop Desktop
+copyright: Copyright © 2026 GenLoop Team
+
+directories:
+  output: dist-electron
+  buildResources: build
+
+files:
+  - dist/**/*
+  - dist-electron/main/**/*
+  - dist-electron/preload/**/*
+
+extraResources:
+  - from: node_modules/puppeteer-core/.local-chromium
+    to: chromium
+    filter:
+      - "**/*"
+
+asar: true
+asarUnpack:
+  - "**/*.node"
+  - node_modules/puppeteer-core/**/*
+
+mac:
+  category: public.app-category.productivity
+  target:
+    - dmg
+    - zip
+  icon: build/icon.icns
+  hardenedRuntime: true
+  gatekeeperAssess: false
+  entitlements: build/entitlements.mac.plist
+  entitlementsInherit: build/entitlements.mac.plist
+
+win:
+  target:
+    - nsis
+    - portable
+  icon: build/icon.ico
+  publisherName: GenLoop Team
+  verifyUpdateCodeSignature: false
+
+linux:
+  target:
+    - AppImage
+    - deb
+    - rpm
+  icon: build/icon.png
+  category: Utility
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: always
+  createStartMenuShortcut: true
+
+publish:
+  provider: github
+  owner: ValueCell-ai
+  repo: GenLoop-Desktop
+
+protocols:
+  - name: GenLoop
+    schemes:
+      - genloop
